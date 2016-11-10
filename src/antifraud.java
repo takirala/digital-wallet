@@ -144,6 +144,10 @@ public class antifraud {
                             int depth) {
         depth++;
         if (!stateMap.containsKey(from)) return Integer.MAX_VALUE;
+        // We can maintain a list of nodes visited so far in order to
+        // prevent visiting them again. This is just an optimization
+        // but will not change any business logic.
+
 
         // Optimistic bfs with dfs
         HashSet<Integer> neighbors = stateMap.get(from);
