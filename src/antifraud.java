@@ -76,8 +76,12 @@ public class antifraud {
                     } catch (NumberFormatException ignore) {
                         continue;
                     }
-                    long t1 = System.currentTimeMillis();
-                    int distance = findRelation(initialState, from, to, 0);
+                    //long t1 = System.currentTimeMillis();
+                    int distance = findRelation(initialState, from,
+                         to, 0, new HashSet<Integer>());
+                    //System.out.println("From : " + from + " to : " + to + 
+                    //    " distance " + distance + " time : " 
+                    // + (System.currentTimeMillis()-t1));
                     if (from == to)
                         throw new Exception("INVALID_TRANSACTION");
                     if (distance == 1) {
@@ -138,24 +142,29 @@ public class antifraud {
         }
     }
 
+    /**
+    * @from : Indicates the source vertex
+    * @to : Indicates the destination vertex
+    * @depth : Indicates the nth degree of friend distance
+    *   This can be used to extend the functionality
+    * @visited : stores the list of vertices visted so far.
+    */
     static int findRelation(HashMap<Integer, HashSet<Integer>> stateMap,
                             Integer from,
                             Integer to,
-                            int depth) {
+                            int depth,
+                            HashSet<Integer> visited) {
         depth++;
         if (!stateMap.containsKey(from)) return Integer.MAX_VALUE;
-        // We can maintain a list of nodes visited so far in order to
-        // prevent visiting them again. This is just an optimization
-        // but will not change any business logic.
-
+        visited.add(from);
 
         // Optimistic bfs with dfs
         HashSet<Integer> neighbors = stateMap.get(from);
         if (neighbors.contains(to)) return depth;
 
         for (Integer neighbor : neighbors) {
-            if (depth < 4) {
-                int reach = findRelation(stateMap, neighbor, to, depth);
+            if (depth < 4 && !visited.contains(neighbor)) {
+                int reach = findRelation(stateMap, neighbor, to, depth, visited);
                 if (reach <= 4) return reach;
             }
         }
