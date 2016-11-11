@@ -76,12 +76,12 @@ public class antifraud {
                     } catch (NumberFormatException ignore) {
                         continue;
                     }
-                    //long t1 = System.currentTimeMillis();
+                    long t1 = System.currentTimeMillis();
                     int distance = findRelation(initialState, from,
                          to, 0, new HashSet<Integer>());
-                    //System.out.println("From : " + from + " to : " + to + 
-                    //    " distance " + distance + " time : " 
-                    // + (System.currentTimeMillis()-t1));
+                    System.out.println("From : " + from + " to : " + to + 
+                        " distance " + distance + " time : " 
+                    + (System.currentTimeMillis()-t1));
                     if (from == to)
                         throw new Exception("INVALID_TRANSACTION");
                     if (distance == 1) {
@@ -162,13 +162,20 @@ public class antifraud {
         HashSet<Integer> neighbors = stateMap.get(from);
         if (neighbors.contains(to)) return depth;
 
+        int minReach = Integer.MAX_VALUE;
         for (Integer neighbor : neighbors) {
             if (depth < 4 && !visited.contains(neighbor)) {
-                int reach = findRelation(stateMap, neighbor, to, depth, visited);
-                if (reach <= 4) return reach;
+                int reach = findRelation(stateMap, neighbor, to, depth, 
+                    visited);
+                if (reach <= 4) {
+                    // Found something, search for better.
+                    minReach = Math.min(minReach, reach);
+                }
+                // It can't better than this.
+                if(minReach == 1) break;
             }
         }
-        return Integer.MAX_VALUE;
+        return minReach;
     }
 
     static void addEdge(Integer from, Integer to,
